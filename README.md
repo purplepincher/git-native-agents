@@ -4,7 +4,7 @@ A **multi-agent orchestration system** built entirely on git primitives — agen
 
 ## Why It Matters
 
-Multi-agent systems typically require a central scheduler, message broker, and shared database. This system replaces all three with git: each agent is a repository, messages are files committed to the recipient's inbox, and coordination is a git merge. The result is a fully distributed, auditable, fault-tolerant agent fleet with zero external dependencies. Every message leaves a permanent commit trail. Every decision is a merge commit. Thought branches provide isolated speculative execution with clean rollback (just delete the branch). The system scales cleanly to 5–50 agents — beyond that, the O(N²) message-routing overhead suggests moving to a broker-based architecture.
+Multi-agent systems typically require a central scheduler, message broker, and shared database. This system replaces all three with git: each agent is a repository, messages are files committed to the recipient's inbox, and coordination is a git merge. The result is a fully distributed, auditable, fault-tolerant agent fleet with zero external dependencies. Every message leaves a permanent commit trail. Every decision is a merge commit. Thought branches provide isolated speculative execution with clean rollback (just delete the branch). The system is intended for small fleets; it has not been benchmarked at scale, and a broker-based architecture is likely more appropriate once message-routing overhead becomes noticeable.
 
 ## How It Works
 
@@ -78,7 +78,7 @@ agents/{name}/
 
 ## Architecture Notes
 
-Git-Native Agents extends the single-agent model (git-agent-system) to multi-agent orchestration. Each agent is fully autonomous — no central scheduler, no shared state beyond git. The system is well-suited for long-running reasoning tasks where audit trails matter. In **γ + η = C**, this architecture pushes everything toward η: git handles all coordination reflexively. The O(N²) message-routing limit is the γ boundary. See [Architecture](https://github.com/SuperInstance/SuperInstance/blob/main/ARCHITECTURE.md).
+Git-Native Agents extends the single-agent model (git-agent-system) to multi-agent orchestration. Each agent is fully autonomous — no central scheduler, no shared state beyond git. The system is well-suited for long-running reasoning tasks where audit trails matter. In **γ + η = C**, this architecture pushes everything toward η: git handles all coordination reflexively. See [Architecture](https://github.com/SuperInstance/SuperInstance/blob/main/ARCHITECTURE.md).
 
 ## References
 
