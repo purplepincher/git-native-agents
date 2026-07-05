@@ -78,7 +78,7 @@ agents/{name}/
 
 ## Architecture Notes
 
-Git-Native Agents extends the single-agent model (git-agent-system) to multi-agent orchestration. Each agent is fully autonomous — no central scheduler, no shared state beyond git. The system is well-suited for long-running reasoning tasks where audit trails matter. In **γ + η = C**, this architecture pushes everything toward η: git handles all coordination reflexively. See [Architecture](https://github.com/SuperInstance/SuperInstance/blob/main/ARCHITECTURE.md).
+Git-Native Agents extends the single-agent model (git-agent-system) to multi-agent orchestration. Each agent is fully autonomous — no central scheduler, no shared state beyond git: every message is a committed file, every decision a merge. That design is what makes the coordination auditable after the fact, and it's also why the concurrency hardening below mattered — git's own locking has to carry weight a scheduler would otherwise absorb.
 
 ## References
 
