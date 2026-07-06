@@ -4,9 +4,9 @@ All notable changes to this project are documented in this file. Format
 follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 This is a Bash script with no package manifest, so versioning is git-tag
-only. No tags exist yet; everything below is grouped under `[Unreleased]`.
+only. This is the first tagged release.
 
-## [Unreleased]
+## [0.2.0] - 2026-07-06
 
 ### Added
 
@@ -14,11 +14,6 @@ only. No tags exist yet; everything below is grouped under `[Unreleased]`.
   (`bash tests/run.sh`) on every push and pull request — this repo
   previously had no CI at all.
 - CHANGELOG.md (this file).
-
-## [0.2.0] - 2026-07-04
-
-### Added
-
 - `flock`-based concurrency serialization on all commit call sites
   (`send`, `tick`, `remember`, `think`, `decide`), and a registry-level
   lock for `spawn`/`broadcast`/`fleet` to eliminate check-then-act races
