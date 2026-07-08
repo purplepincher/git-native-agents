@@ -131,6 +131,29 @@ agent repos / registry entries were ephemeral and were removed before
 committing; only this note and the one-line `--` fix in
 `scripts/brainstorm-round.sh` are committed.
 
+## Transcript auto-commit (verified)
+
+A deep review (Fable, this session) found the script wrote
+`rounds/$TOPIC/transcript.md` to disk but never committed it into the main
+repo — every real round's transcript had been committed manually, by a
+human, after the fact. `invoke_participant()`'s work was real and durable
+inside each agent's own repo, but the main repo's "durable, cloneable
+record" claim wasn't actually true until now.
+
+Fixed: after the transcript is written, the script `git add`s and
+`git commit`s it in the main repo, guarded against the "nothing to
+commit" case (`git diff --cached --quiet` before committing, so a re-run
+producing byte-identical content is a no-op rather than a crash under
+`set -euo pipefail`). Verified for real: ran the same topic twice with
+different content each time — both produced a real, distinct commit; a
+third identical re-run correctly reported "nothing to commit" rather
+than erroring.
+
+While testing this, the same "nothing to commit" crash risk was found in
+`orchestrator.sh`'s own `remember()` function (a re-run producing an
+identical memory value would hit the same `set -euo pipefail` failure
+mode) and fixed with the same guard.
+
 ## Rough edges / not yet verified
 
 - `glm` is now exercised end-to-end (see the argument-hardening section above);

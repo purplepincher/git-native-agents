@@ -188,7 +188,17 @@ remember() {
         mkdir -p memory
         echo "$value" > "memory/${key}.txt"
         git add -A
-        git commit -m "remember: $key" -q
+        # If the memory value is byte-identical to what is already committed
+        # (e.g. a brainstorm round re-run produces the same response), there is
+        # nothing to commit and `git commit` would exit nonzero — which under
+        # `set -euo pipefail` would kill the calling script. Skip the commit
+        # in that case; the existing commit already holds this exact value and
+        # the tag refresh below keeps recall working.
+        if git diff --cached --quiet; then
+            warn "Agent '$name': memory '$key' unchanged (nothing to commit)"
+        else
+            git commit -m "remember: $key" -q
+        fi
         git tag -f "memory/${key}" HEAD 2>/dev/null
         
         ok "Agent '$name' remembered: $key"

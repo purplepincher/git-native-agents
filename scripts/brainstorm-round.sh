@@ -188,6 +188,26 @@ mkdir -p "$ROUND_DIR"
 } > "$ROUND_DIR/transcript.md"
 
 # ---------------------------------------------------------------------------
+# Commit the transcript into the main repo so the round leaves a durable,
+# cloneable record here (not only in the nested agent repos) — fulfilling
+# the "durable, cloneable record" claim in this script's header comment,
+# which was previously only true because a human ran `git commit` by hand
+# after each of the first two rounds.
+#
+# Re-runs that happen to produce byte-identical content must be a no-op
+# rather than a crash: `git commit` returns nonzero when there is nothing
+# to commit, which under `set -euo pipefail` would terminate the script.
+# We check the staged tree first and only commit when there is a real diff.
+# ---------------------------------------------------------------------------
+git -C "$BASE_DIR" add "rounds/$TOPIC/transcript.md"
+if git -C "$BASE_DIR" diff --cached --quiet -- "rounds/$TOPIC/transcript.md"; then
+    echo "[brainstorm] transcript unchanged for '$TOPIC' (nothing to commit)"
+else
+    git -C "$BASE_DIR" commit -m "round: $TOPIC completed ($(date -Iseconds))" -q
+    echo "[brainstorm] committed transcript to main repo: rounds/$TOPIC/transcript.md"
+fi
+
+# ---------------------------------------------------------------------------
 # Output: fleet status and pointers to the history.
 # ---------------------------------------------------------------------------
 echo ""
