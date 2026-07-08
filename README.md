@@ -163,8 +163,45 @@ agents/{name}/
 - **No persistence beyond git.** History, messages, and memories are in the repo; host backup/restore is up to you.
 - **Single-host or shared-filesystem.** Cross-machine fleets require a shared filesystem or manual repo synchronization.
 - **Bash-only orchestration.** There is no API server or library; the interface is the `orchestrator.sh` command line.
-- **Message processing is simulated.** `tick` generates a canned response; real agent logic must be plugged into the script or implemented separately.
+- **Message processing is simulated by `orchestrator.sh tick` alone.** Real agent logic must be plugged in separately for that command — but `scripts/brainstorm-round.sh` does exactly this, overwriting the canned response with real output from an actual external AI CLI (kimi, opencode/GLM, or mmx) before recording it.
 - **Not benchmarked at scale.** Designed for small fleets; a broker-based system is likely more appropriate for high message volumes.
+
+## Adversarial code review disclosure (Item 6)
+
+Per `purplepincher/purplepincher`'s graduation checklist Item 6, every bug
+a cross-model adversarial review finds gets published here verbatim, not
+softened or buried.
+
+During a real adversarial review of `scripts/brainstorm-round.sh` — a
+different model (deepseek-v4-pro, via aider) reviewing code that a
+same-model sanity test had already passed — a real, serious bug was
+found: the outbox response was written with an unquoted heredoc
+(`<<EOF`). Any backtick, `$(...)`, or `${...}` present in a real AI
+response would have been interpreted by the shell while writing the
+response to disk.
+
+**What could have gone wrong.** At best, this would silently corrupt the
+recorded response the moment a real participant's answer contained a
+backtick (routine in any response with code formatting). At worst, a
+response containing a shell command inside backticks would have been
+*executed*, not just recorded, in a subshell on the machine running the
+round.
+
+**Why the original test missed it.** The first, one-participant sanity
+test used the prompt "What is 2 + 2 and why?" — a prompt that, by
+construction, could never produce shell-active characters. The bug was
+invisible to a same-process check because the check and the artifact
+shared the same blind spot; it only surfaced once review crossed a real
+model boundary.
+
+**The fix.** The writer was converted to `printf '%s'` per field (commit
+`acd74f1`). `printf '%s'` never re-interprets its argument as shell
+syntax, so a response deliberately containing backticks is now written
+out unexecuted and unmodified — verified with a real re-test using a
+prompt engineered to produce backticks in the response.
+
+This is this repository's first real instance of satisfying Item 6's
+disclosure requirement.
 
 ## Testing
 
