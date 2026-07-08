@@ -120,13 +120,16 @@ for participant in "${PARTICIPANTS[@]}"; do
     response="$(invoke_participant "$participant" "$prompt")"
 
     # Overwrite the simulated outbox response with the real one.
-    cat > "$BASE_DIR/agents/$participant/outbox/$msg_name" <<EOF
-from: $participant
-to: coordinator
-timestamp: $(date -Iseconds)
-in_reply_to: $msg_name
-result: $response
-EOF
+    # Use printf to avoid shell expansion of response content that may contain
+    # backticks, $(...), ${...}, etc.
+    {
+        printf 'from: %s\n' "$participant"
+        printf 'to: %s\n' "coordinator"
+        printf 'timestamp: %s\n' "$(date -Iseconds)"
+        printf 'in_reply_to: %s\n' "$msg_name"
+        printf 'result: %s\n' "$response"
+    } > "$BASE_DIR/agents/$participant/outbox/$msg_name"
+
     (
         cd "$BASE_DIR/agents/$participant"
         git add -A
