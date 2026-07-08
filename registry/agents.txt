@@ -3,3 +3,5 @@
 /home/phoenix/repos/git-native-agents/agents/analyst
 /home/phoenix/repos/git-native-agents/agents/memory-keeper
 /home/phoenix/repos/git-native-agents/agents/scout
+/tmp/claude-1000/-home-eileen/c25f18c4-8752-45a5-bacc-1c3e70a86ab7/scratchpad/git-native-brainstorm-wiring/repo/agents/coordinator
+/tmp/claude-1000/-home-eileen/c25f18c4-8752-45a5-bacc-1c3e70a86ab7/scratchpad/git-native-brainstorm-wiring/repo/agents/kimi
