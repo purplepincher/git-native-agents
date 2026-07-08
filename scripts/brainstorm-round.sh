@@ -47,7 +47,12 @@ invoke_participant() {
             kimi -p "$prompt"
             ;;
         glm)
-            opencode run -m zai-coding-plan/glm-5.2 --dangerously-skip-permissions "$prompt"
+            # `--` is required: opencode (yargs) treats a positional message
+            # starting with `-` as an unknown flag. kimi does NOT get this:
+            # `kimi -p -- "$prompt"` breaks under commander.js while
+            # `kimi -p "$prompt"` already handles dash-leading values. See
+            # BRAINSTORM_WIRING_NOTES.md for the tested rationale.
+            opencode run -m zai-coding-plan/glm-5.2 --dangerously-skip-permissions -- "$prompt"
             ;;
         mmx)
             mmx text chat --message "$prompt" --output text
